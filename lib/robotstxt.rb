@@ -68,7 +68,8 @@ module Robotstxt
       r.body = yield
     else
       r.get(u.scheme + '://' + u.host)
-    end && r.rules_to_hash
+    end
+    r.rules_to_hash
   end
 
 end
