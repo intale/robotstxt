@@ -32,7 +32,7 @@ module Robotstxt
 			@rules = []
 			@sitemaps = []
 			@robot_id = robot_id.downcase if !robot_id.nil?
-			
+      @parsed = false
 		end
 		
 		
@@ -133,18 +133,22 @@ module Robotstxt
     end
 
     def rules_to_hash(for_client = true, only_disallowed = true)
+      parse
       rules.inject({}) do |res, el|
-        next if for_client && (el[0] != @robot_id or el[0] != "*")
-        res[el[0]] = { :disallow => el[1] }
-        res[el[0]][:allow] = el[2] unless only_disallowed
+        if for_client and (el[0] == @robot_id or el[0] == "*")
+          res[el[0]] = { :disallow => el[1] }
+          res[el[0]][:allow] = el[2] unless only_disallowed
+        end
         res
       end
     end
 		
 		private
 		
-		def parse()
-			@body = @body.downcase
+		def parse
+      return @body if @parsed
+
+      @body = @body.downcase
 			
 			@body.each_line {|r| 
 				
@@ -172,9 +176,7 @@ module Robotstxt
 					
 				end
 				
-			}
-			
-			
+			}.tap { @parsed = true }
 		end
 		
 	end
