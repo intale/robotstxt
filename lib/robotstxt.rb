@@ -39,6 +39,15 @@ module Robotstxt
 		r.allowed?(url) if r.get(u.scheme + '://' + u.host)	
     
   end
+
+  def self.allowed_from_hash?(url, hash, robot_id)
+    robot_id = robot_id.downcase
+    url = URI.parse(url)
+    querystring = (!url.query.nil?) ? '?' + url.query : ''
+    url_path = url.path + querystring
+    rules = hash.slice(robot_id, "*").values.map { |h| h[:disallow] }.flatten
+    !rules.any? { |rule| url_path.match('^' + rule) or rule == '/' }
+  end
   
   # Analyze the robots.txt file to return an <tt>Array</tt> containing the list of XML Sitemaps URLs.
   #
