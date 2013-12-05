@@ -52,4 +52,14 @@ module Robotstxt
     
   end
 
+  def self.get_robots_rules(url, robot_id)
+    u = URI.parse(url)
+    r = Robotstxt::Parser.new(robot_id)
+    if block_given?
+      yield r
+    else
+      r.get(u.scheme + '://' + u.host)
+    end && r.rules_to_hash
+  end
+
 end

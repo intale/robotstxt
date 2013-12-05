@@ -19,8 +19,8 @@ require 'uri'
 
 module Robotstxt
 	class Parser
-		attr_accessor :robot_id
-		attr_reader :found, :body, :sitemaps, :rules
+		attr_accessor :robot_id, :body
+		attr_reader :found, :sitemaps, :rules
 		
 		# Initializes a new Robots::Robotstxtistance with <tt>robot_id</tt> option.
 		#
@@ -130,8 +130,16 @@ module Robotstxt
 		#
 		def found?
 			!!@found
-		end
-		
+    end
+
+    def rules_to_hash(for_client = true, only_disallowed = true)
+      rules.inject({}) do |res, el|
+        next if for_client && (el[0] != @robot_id or el[0] != "*")
+        res[el[0]] = { :disallow => el[1] }
+        res[el[0]][:allow] = el[2] unless only_disallowed
+        res
+      end
+    end
 		
 		private
 		
