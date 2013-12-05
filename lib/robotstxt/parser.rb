@@ -62,7 +62,7 @@ module Robotstxt
 					when Net::HTTPSuccess then
 					@found = true
 					@body = response.body
-					parse()		
+					parse
 					
 					else
 					@found = false
@@ -133,13 +133,17 @@ module Robotstxt
     end
 
     def rules_to_hash(for_client = true, only_disallowed = true)
-      parse
-      rules.inject({}) do |res, el|
-        if for_client and (el[0] == @robot_id or el[0] == "*")
-          res[el[0]] = { :disallow => el[1] }
-          res[el[0]][:allow] = el[2] unless only_disallowed
+      if @body
+        parse
+        rules.inject({}) do |res, el|
+          if for_client and (el[0] == @robot_id or el[0] == "*")
+            res[el[0]] = { :disallow => el[1] }
+            res[el[0]][:allow] = el[2] unless only_disallowed
+          end
+          res
         end
-        res
+      else
+        {}
       end
     end
 		
