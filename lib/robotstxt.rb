@@ -56,7 +56,7 @@ module Robotstxt
     u = URI.parse(url)
     r = Robotstxt::Parser.new(robot_id)
     if block_given?
-      yield r
+      r.body = yield
     else
       r.get(u.scheme + '://' + u.host)
     end && r.rules_to_hash
